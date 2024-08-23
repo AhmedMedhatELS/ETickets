@@ -1,0 +1,95 @@
+﻿@model Cinema
+
+@{
+    ViewData["Title"] = "Add Cinema";
+}
+
+<h1 style="text-align:center" class="mb-3">Add New Cinema</h1>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+<form asp-action="AddCinema" enctype="multipart/form-data" method="post">
+    <div class="form-group mb-3">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="phone" class="control-label"></label>
+        <input asp-for="phone" class="form-control" />
+        <span asp-validation-for="phone" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="city" class="control-label"></label>
+        <input asp-for="city" class="form-control" />
+        <span asp-validation-for="city" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="State" class="control-label"></label>
+        <input asp-for="State" class="form-control" />
+        <span asp-validation-for="State" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="Address" class="control-label"></label>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="ImageFile" class="control-label"></label>
+        <input asp-for="ImageFile" type="file" class="form-control" />
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
+    </div>
+    <hr />
+    <div class="mb-5">
+        <h3>Select movies</h3>
+        <div class="container mt-5">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-7 g-4">
+                @foreach (var movie in ViewData["Movies"] as List<Movie> ?? new List<Movie>())
+                {
+                   <div class="col">
+                        <div class="card h-100 movie-card" data-movie-id="@movie.MovieId">
+                            <label>
+                                <img src="~/images/movies/@movie.ImgUrl" class="card-img-top" alt="@movie.Title" />
+                                <div class="card-body">
+                                    <h5 class="card-title text-center text-dark">@movie.Title</h5>
+                                    <input type="checkbox" name="Selectedmovies" value="@movie.MovieId" class="movie-checkbox" style="display:none;" />
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group mt-5" style="text-align:center">
+        <input type="submit" value="Add Cinema" class="btn btn-outline-primary btn-lg btn-block" style="width: 100%;" />
+    </div>
+
+</form>
+
+
+<link rel="stylesheet" href="~/Style/AddCinema.css" />
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
+<script>
+    // JavaScript to toggle checkbox and card focus
+    const movieCards = document.querySelectorAll('.movie-card');
+
+    movieCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const checkbox = card.querySelector('.movie-checkbox');
+            checkbox.checked = !checkbox.checked; // Toggle checkbox state
+            card.classList.toggle('selected', checkbox.checked); // Add/remove selected class
+        });
+    });
+</script>

@@ -1,0 +1,36 @@
+﻿
+
+.cinema-card {
+    border-radius: 15px !important;
+    overflow: hidden !important;
+}
+
+    .cinema-card img {
+        border-bottom: 5px solid #f8f9fa !important;
+    }
+
+    .cinema-card .card-body {
+        background: linear-gradient(135deg, #f8f9fa 50%, #e9ecef 50%) !important;
+    }
+
+.movie-card {
+    transition: transform 0.3s ease-in-out;
+}
+
+    .movie-card:hover {
+        transform: scale(1.05);
+    }
+
+    .movie-card img {
+        border-radius: 15px 15px 0 0;
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .movie-card .card-title {
+        font-size: 1.2rem;
+    }
+
+    .movie-card .card-body {
+        background-color: #f8f9fa;
+    }

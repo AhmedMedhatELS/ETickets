@@ -1,0 +1,81 @@
+﻿@model Cinema
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Cinema Details Section -->
+        <div class="col-lg-4 col-md-5">
+            <div class="card cinema-card shadow-lg">
+                <img src="~/images/cinema/@Model.img" class="card-img-top" alt="@Model.Name">
+                <div class="card-body text-center">
+                    <h3 class="card-title font-weight-bold position-relative">@Model.Name</h3>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="d-flex justify-content-end position-absolute end-0 m-2" style="top:455px;">
+                            <!-- Edit Button -->
+                            <a asp-controller="Cinemas" asp-action="EditCinema" asp-route-id="@Model.CinemaId" class="btn btn-outline-warning me-2">
+                                <img src="~/images/Icons/pen.svg" />
+                            </a>
+                            <!-- Trash Bin Icon -->
+                            <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@Model.CinemaId">
+                                <img src="~/images/Icons/trash.svg" />
+                            </button>
+                        </div>
+                    }
+                    <p class="card-text text-muted"><i class="fas fa-phone"></i> @Model.phone</p>
+                    <p class="card-text"><i class="fas fa-map-marker-alt"></i> @Model.Address</p>
+                    <p class="card-text"><i class="fas fa-map-marker-alt"></i> @Model.city, @Model.State</p>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Movies Section -->
+        <div class="col-lg-8 col-md-7">
+            <h4 class="mb-4">Movies Available</h4>
+            <div class="row">
+                @foreach (var movie in Model.Movies)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card movie-card shadow-lg border-0">
+                            <a asp-action="Index" asp-controller="Movie" asp-route-id="@movie.MovieId">
+                                <img src="~/images/movies/@movie.ImgUrl" class="card-img-top" style="height:100%" alt="@movie.Title">
+                            </a>
+                            <div class="card-body text-center">
+                                <h5 class="card-title font-weight-bold">
+                                    <a asp-action="Index" asp-controller="Movie" asp-route-id="@movie.MovieId" class="stretched-link text-decoration-none">
+                                        @movie.Title
+                                    </a>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal-@Model.CinemaId" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the Cinema "@Model.Name"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a asp-controller="Cinemas" asp-action="DeleteCinema" asp-route-id="@Model.CinemaId" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="~/Style/movie.css" />
+
+<link rel="stylesheet" href="~/Style/CinemaDetailsStyle.css" /> 

@@ -1,0 +1,150 @@
+﻿@model Movie
+
+@{
+    ViewData["Title"] = "Add Movie";
+}
+
+<h1 style="text-align:center" class="mb-3">Add New Movie</h1>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<span style="display: @(TempData["DateProblem"] == null ? "none" : ""); text-align:center;" class="text-danger">
+    The End Date must be after the Start Date.
+</span>
+
+<form asp-action="AddMovie" enctype="multipart/form-data" method="post">
+    <div class="form-group mb-3">
+        <label asp-for="Title" class="control-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="Price" class="control-label"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="Description" class="control-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="TrailerUrl" class="control-label"></label>
+        <input asp-for="TrailerUrl" class="form-control" />
+        <span asp-validation-for="TrailerUrl" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="StartDate" class="control-label"></label>
+        <input asp-for="StartDate" class="form-control" type="date" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="EndDate" class="control-label"></label>
+        <input asp-for="EndDate" class="form-control" type="date" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3">
+        <label asp-for="ImageFile" class="control-label"></label>
+        <input asp-for="ImageFile" type="file" class="form-control" />
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-5">
+        <label asp-for="CategoriesId" class="control-label">Category</label>
+        <select asp-for="CategoriesId" class="form-control">
+            <option value="">-- Select Category --</option>
+            @foreach (var category in ViewData["Categories"] as List<Categories> ?? new List<Categories>())
+            {
+                <option value="@category.CategoriesId">@category.Name</option>
+            }
+        </select>
+        <span asp-validation-for="CategoriesId" class="text-danger"></span>
+    </div>
+    <hr />
+    <div class="mb-5">
+        <h3>Select Actors</h3>
+        <div class="container mt-5">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-7 g-4">
+                @foreach (var actor in ViewData["Actors"] as List<Actor> ?? new List<Actor>())
+                {
+                    <div class="col">
+                        <div class="card h-100 actor-card" data-actor-id="@actor.ActorId">
+                            <label>
+                                <img src="~/images/cast/@actor.ProfilePicture" class="card-img-top" alt="@actor.Name" />
+                                <div class="card-body">
+                                    <h5 class="card-title text-center text-dark">@actor.Name</h5>
+                                    <input type="checkbox" name="SelectedActors" value="@actor.ActorId" class="actor-checkbox" style="display:none;" />
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <hr />
+    <h3>Select Cinemas</h3>
+    <div class="container mt-5">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            @foreach (var cinema in ViewData["Cinemas"] as List<ETickets.Models.Cinema> ?? new List<Cinema>())
+            {
+                <div class="col">
+                    <div class="card h-100 cinema-card" tabindex="0">
+                        <label>
+                            <img src="~/images/cinema/@cinema.img" class="card-img-top" alt="@cinema.Name" />
+                            <div class="card-body">
+                                <h5 class="card-title text-center text-dark">@cinema.Name</h5>
+                                <input type="checkbox" name="SelectedCinemas" value="@cinema.CinemaId" style="display: none;" />
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <div class="form-group mt-5" style="text-align:center">
+        <input type="submit" value="AddMovie" class="btn btn-outline-primary btn-lg btn-block" style="width: 100%;"/>
+    </div>
+
+</form>
+
+
+<link rel="stylesheet" href="~/Style/Addmovie.css" />
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
+<script>
+    // JavaScript to toggle checkbox and card focus
+    const actorCards = document.querySelectorAll('.actor-card');
+
+    actorCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const checkbox = card.querySelector('.actor-checkbox');
+            checkbox.checked = !checkbox.checked; // Toggle checkbox state
+            card.classList.toggle('selected', checkbox.checked); // Add/remove selected class
+        });
+    });
+</script>
+
+<script>
+    document.querySelectorAll('.cinema-card').forEach(card => {
+        card.addEventListener('click', function () {
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked; // Toggle checkbox state
+            this.classList.toggle('selected', checkbox.checked); // Add or remove the selected class
+        });
+
+        // Optional: Allow keyboard focus
+        card.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                this.click(); // Trigger click event on Enter key
+            }
+        });
+    });
+</script>

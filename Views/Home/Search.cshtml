@@ -1,0 +1,163 @@
+﻿@model SearchView
+
+@{
+	ViewData["Title"] =ViewData["SearchQuery"];
+}
+
+<div class="accordion-header">
+	<h1>Results for "@ViewData["SearchQuery"]"</h1>
+</div>
+<div class="container my-4">
+    
+    <div class="mb-3 p-3 border border-0 rounded" style="display: @(Model?.Movies?.Count > 0 ? "" : "none")">
+        <h4 class="text-black mb-4">Movies</h4>
+        <div class="container mt-4">
+            <div class="row">
+                @if (Model?.Movies?.Count > 0) 
+                   @foreach (var Movie in Model.Movies)
+                   {
+                        <div class="col-md-6">
+                            <div class="card mb-4 sharp-card">
+                                <div class="row g-0">
+                                    <div class="col-md-4">
+                                        <a asp-controller="Movie" asp-action="Index" asp-route-id="@Movie.MovieId">
+                                            <img src="@Url.Content("~/images/movies/" + Movie.ImgUrl)" class="img-fluid rounded-start card-img" alt="@Movie.Title">
+                                        </a>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <a asp-controller="Movie" asp-action="Index" asp-route-id="@Movie.MovieId">
+                                                    @Movie.Title
+                                                </a>
+                                            </h5>
+                                            <h6>
+                                                Price :
+                                                <button class="btn btn-dark" disabled>
+                                                    @Movie.Price
+                                                </button>
+                                            </h6>
+                                            <p>
+                                                Category :
+                                                <a asp-action="category" asp-controller="categories" asp-route-Category="@Movie.Categories.Name" class="category-link">@Movie.Categories.Name</a>
+                                            </p>
+
+                                            @switch (Movie.MovieStatus)
+                                            {
+                                                case ETickets.Data.MovieStatus.Upcoming:
+                                                    <button class="btn btn-warning" disabled>
+                                                        Upcoming
+                                                    </button>
+                                                    break;
+                                                case ETickets.Data.MovieStatus.Available:
+                                                    <button class="btn btn-success" disabled>
+                                                        Available
+                                                    </button>
+                                                    break;
+                                                case ETickets.Data.MovieStatus.Expired:
+                                                     <button class="btn btn-danger" disabled>
+                                                        Expired
+                                                    </button>
+                                                    break;
+                                            }
+                                            <div class="btn-group  dropend">
+                                                <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                     Cinemas
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    @foreach (var cinema in Movie.Cinemas)
+                                                    {
+                                                        <li><a class="dropdown-item " href="javascript:void(0);">@cinema.Name</a></li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                            <div class="mt-5">
+                                                @{
+                                                    if (Movie.MovieStatus == ETickets.Data.MovieStatus.Available)
+                                                    {
+                                                        <button type="button" class="btn btn-outline-success btn-lg">Book Ticket</button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="button" class="btn btn-outline-success btn-lg" disabled>Book Ticket</button>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                   }
+            </div>
+        </div>
+
+        <link rel="stylesheet" href="~/Style/CardStyle.css" />
+
+        <hr />
+    </div>
+
+   
+
+    <div class="mb-3 p-3 border border-0 rounded" style="display: @(Model?.Actors?.Count > 0 ? "" : "none")">
+        <h4 class="text-black mb-4">Actors</h4>
+
+        <div class="container mt-5">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-7 g-4">
+                @if (Model?.Actors?.Count > 0)
+                    @foreach (var actor in Model.Actors)
+                    {
+                         <div class="col">
+                             <div class="card h-100 actor-card">
+                                 <a asp-controller="Actor" asp-action="Details" asp-route-id="@actor.ActorId" class="text-decoration-none">
+                                <img src="~/images/cast/@actor.ProfilePicture" class="card-img-top" alt="@actor.Name">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center text-dark">@actor.Name</h5>
+                                </div>
+                                 </a>
+                             </div>
+                         </div>
+                    }
+            </div>
+        </div>
+
+
+        <link rel="stylesheet" href="~/Style/Actor.css" />
+
+
+        <hr />
+    </div>
+
+   
+
+    <div class="mb-3 p-3 border border-0 rounded" style="display: @(Model?.Cinemas?.Count > 0 ? "" : "none")">
+        <h4 class="text-black mb-4">Cinemas</h4>
+
+        <div class="container mt-5">
+            <div class="row">
+                @if (Model?.Cinemas?.Count > 0)
+                    @foreach (var cinema in Model.Cinemas)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card cinema-card shadow-lg">
+                                <a asp-action="Details" asp-controller="Cinemas" asp-route-id="@cinema.CinemaId">
+                                    <img src="~/images/cinema/@cinema.img" class="card-img-top" alt="@cinema.Name">
+                                </a>
+                                <div class="card-body text-center">
+                                    <h5 class="card-title font-weight-bold">
+                                        <a asp-action="Details" asp-controller="Cinemas" asp-route-id="@cinema.CinemaId" class="stretched-link text-decoration-none">
+                                            @cinema.Name
+                                        </a>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                    }
+            </div>
+        </div>
+        <link rel="stylesheet" href="~/Style/movie.css" />
+
+
+        <link rel="stylesheet" href="~/Style/CinemaStyle.css" />
+    </div>
+</div>

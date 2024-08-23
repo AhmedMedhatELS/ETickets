@@ -1,0 +1,135 @@
+﻿@model List<TicketsCart>
+
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<br />
+<div class="card shadow border-0">
+    <div class="card-header bg-secondary bg-gradient text-light ml-0 py-4">
+        <div class="row px-4">
+            <div class="col-6">
+                <h5 class="pt-2 text-white">Ticket Cart</h5>
+            </div>
+        </div>
+    </div>
+    <div class="card-body my-4">
+        <div class="row mb-3 pb-3">
+            <div class="col-md-2 offset-md-1">
+                <a asp-action="Index" asp-controller="Home" class="btn btn-outline-dark text-uppercase mb-5 btn-sm"><small>Continue Shopping</small></a>
+            </div>
+            <div class="col-md-10 offset-md-1">
+                @foreach (var Tmovie in Model)
+                {
+                    <div class="row border-bottom pb-3 mb-4">
+                        <div class="d-none d-lg-block col-lg-1 text-center py-2">
+                            <a asp-action="Index" asp-controller="Movie" asp-route-id="@Tmovie.MovieId">
+                            <img src="~/images/movies/@Tmovie.Movie.ImgUrl" class="rounded" width="100%" />
+                            </a>
+                        </div>
+                        <div class="col-12 col-lg-6 pt-md-3">
+                            <h5 class="text-uppercase text-black"><strong>@Tmovie.Movie.Title</strong></h5>
+                            @{
+                                foreach (var cinema in Tmovie.TCinema)
+                                {
+                                    <p><small>@Tmovie.Movie.Cinemas.FirstOrDefault(c => c.CinemaId == cinema.CinemaId)?.Name x @cinema.QNumber</small></p>
+                                }
+                            }
+                        </div>
+
+
+                        <form asp-action="BookTicket" asp-controller="TicketsCart" method="post" onsubmit="return validateCinemaSelection(@Tmovie?.Movie.MovieId);" class="col-12 col-lg-5 text-center row">
+                           
+                            <input type="hidden" name="MovieId" value="@Tmovie.Movie.MovieId" />
+                            <input type="hidden" name="ViewNavigation" value="@ETickets.Data.ViewNavigation.TicketCart" />
+
+                            <!-- Select Menu for Cinema Selection -->
+                            <div class="col-12 col-md-4 mb-2">
+                                <div class="form-group">
+                                    <select id="CinemaSelect-@Tmovie.Movie.MovieId" name="CinemaId" class="form-select custom-select" style="width:230px;margin-left:-75px;">
+                                        <option value="" selected style="text-align:center;">Select Cinema</option>
+                                        @{
+                                            foreach (var cinema in Tmovie.Movie.Cinemas)
+                                            {
+                                                int ticketscinema = Tmovie?.TCinema.FirstOrDefault(t => t.CinemaId == cinema.CinemaId)?.QNumber ?? 0;
+
+                                                <option value="@cinema.CinemaId" data-quantity="@ticketscinema">@cinema.Name x @ticketscinema</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <!-- Validation message -->
+                                <div class="text-danger mt-2" id="validationMessage-@Tmovie?.Movie.MovieId" style="display:none;margin-left:-45px;">
+                                    Please select a cinema.
+                                </div>
+                                <h6 class="fw-semibold mt-3" style="margin-left:-50px;">
+                                    $@Tmovie?.Movie.Price
+                                    <br />
+                                    <span class="text-muted">&nbsp;x&nbsp;</span>
+                                    @Tmovie?.TCinema.Sum(tc => tc.QNumber)
+                                </h6>
+                            </div>
+                            <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                                <div class="w-75 btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-dark bg-gradient py-2" onclick="incrementTicketQuantity(@Tmovie?.Movie.MovieId)">
+                                        <i class="bi bi-plus-square"></i>
+                                    </button>
+                                    <input type="number" id="TicketQuantity-@Tmovie?.Movie.MovieId" name="QNumber" class="form-control mx-2 text-center" value="0" min="0" style="width: 60px;" readonly/>
+                                    <button type="button" class="btn btn-outline-dark bg-gradient py-2" onclick="decrementTicketQuantity(@Tmovie?.Movie.MovieId)">
+                                        <i class="bi bi-dash-square"></i>
+                                    </button>
+                                </div>                              
+                            </div>
+                            <div class="col-12 d-flex justify-content-center">
+                                <button type="submit" class="btn btn-outline-dark bg-gradient py-2" style="width:150px; margin-left:90px;margin-top:-30px;">
+                                    Confirm
+                                </button>
+                            </div>
+                            <div class="col-3 col-sm-4 col-lg-2 text-right pt-2" style="margin-left: 223px;">
+                                <a asp-action="Delete" asp-controller="TicketsCart" asp-route-TicketsCartId="@Tmovie?.TicketsCartId" class="btn btn-danger bg-gradient py-2">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </div>
+                        </form>
+
+                        <script>
+                            // Add the listener when the document is ready
+                            document.addEventListener("DOMContentLoaded", function () {
+                                addCinemaSelectionListener(@Tmovie?.Movie.MovieId);
+                            });
+                        </script>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="card-footer bg-white border-0">
+            <div class="row">
+                <div class="col-md-4 offset-md-4">
+                    <ul class="list-group mb-4">
+                        <li class="d-flex justify-content-between align-items-center">
+                            <h5 class="text-dark fw-semibold text-uppercase">Total (USD)</h5>
+                            <h4 class="text-dark fw-bolder">$@Model.Sum(e => e.Movie.Price * e.TCinema.Sum(t => t.QNumber))</h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 offset-md-5">
+                    @{
+                        if(Model.Count == 0)
+                        {
+                            <button disabled class="btn btn-success border-0 bg-gradient w-100 py-2 ">Summary</button>
+                        }
+                        else
+                        {
+                            <a asp-action="pay" asp-controller="TicketsCart" class="btn btn-success border-0 bg-gradient w-100 py-2 ">Summary</a>
+                        }
+                    }
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/js/Home.js"></script>

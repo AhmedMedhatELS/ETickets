@@ -1,0 +1,75 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* Style for the search input */
+.search-input {
+    width: 1000px;
+    border-radius: 50px; /* Rounded corners */
+    border: 1px solid #ced4da;
+    transition: width 0.5s ease-in-out;
+}
+
+/* Style for the dropdown select */
+.dropdown-select {
+    border-radius: 50px 0 0 50px; /* Rounded corners */
+    border: 1px solid #ced4da;
+    display: none; /* Hide dropdown initially */
+    position: absolute; /* Position below the input */
+    z-index: 1; /* Ensure it appears above other elements */
+    width: 1%; /* Full width */
+}
+
+.input-group {
+    position: relative; /* Required for positioning the dropdown */
+}
+
+/* Style for the dropdown items */
+.dropdown-item {
+    cursor: pointer;
+}
+
+.cart {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    bottom: 170px;
+    right: 35px;
+    text-decoration: none;
+    text-align: center;
+    line-height: 50px;
+    color: black;
+    border-radius: 50%;
+}
+
+.arrow {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    bottom: 80px;
+    right: 30px;
+    text-decoration: none;
+    text-align: center;
+    line-height: 50px;
+    color: black;
+    border-radius: 50%;
+}

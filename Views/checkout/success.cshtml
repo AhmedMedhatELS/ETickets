@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Payment Successful";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-success mb-4">
+                        <i class="bi bi-check-circle-fill"></i> Payment Successful
+                    </h2>
+                    <p class="card-text lead">
+                        Thank you for your purchase! Your payment has been successfully processed.
+                    </p>
+                    <hr class="my-4">
+                    <p class="text-muted">You can cancel your ticket while it's still pending.</p>
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-primary mt-3">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+﻿
+.movie-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .movie-card:hover {
+        transform: scale(1.05);
+    }
+
+    .movie-card.selected {
+        border: 3px solid #000; /* Increased border thickness for focus effect */
+        box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.7); /* Increased shadow effect */
+    }
+
+
+.card-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+

@@ -1,0 +1,44 @@
+﻿
+.actor-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.actor-card:hover {
+    transform: scale(1.05);
+}
+
+.actor-card.selected {
+    border: 3px solid #000; /* Increased border thickness for focus effect */
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.7); /* Increased shadow effect */
+}
+
+
+.card-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.cinema-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+    .cinema-card:hover {
+        transform: scale(1.05);
+    }
+
+    .cinema-card.selected {
+        border: 3px solid #007bff; /* Focus effect */
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.7); /* Increased shadow effect */
+    }
+
+.card-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 576px) {
+    .cinema-card {
+        margin-bottom: 15px;
+    }
+}

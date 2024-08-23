@@ -1,0 +1,59 @@
+﻿@model List<Actor>
+
+@{
+    ViewData["Title"] = "Actors";
+}
+
+<div class="container mt-5">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-7 g-4">
+        @foreach (var actor in Model)
+        {
+            <div class="col">
+                <div class="card h-100 actor-card position-relative">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="d-flex justify-content-end position-absolute top-0 end-0 m-2">
+                            <!-- Edit Button -->
+                            <a asp-controller="Actor" asp-action="EditActor" asp-route-id="@actor.ActorId" class="btn btn-outline-warning me-2" style="border:none">
+                                <img src="~/images/Icons/pen.svg" />
+                            </a>
+                            <!-- Trash Bin Icon -->
+                            <button class="btn btn-outline-danger no-border" style="border:none" data-bs-toggle="modal" data-bs-target="#deleteModal-@actor.ActorId">
+                                <img src="~/images/Icons/trash.svg" />
+                            </button>
+                        </div>
+                    }
+                    <a asp-controller="Actor" asp-action="Details" asp-route-id="@actor.ActorId" class="text-decoration-none">
+                        <img src="~/images/cast/@actor.ProfilePicture" class="card-img-top" alt="@actor.Name">
+                        <div class="card-body ">
+                            <h5 class="card-title text-center text-dark">@actor.Name</h5>                            
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteModal-@actor.ActorId" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete the Actor "@actor.Name"?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <a asp-controller="Actor" asp-action="DeleteActor" asp-route-id="@actor.ActorId" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+<link rel="stylesheet" href="~/Style/Actor.css" />
+

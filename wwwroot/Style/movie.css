@@ -1,0 +1,64 @@
+﻿
+/* Movie Image Container */
+.movie-image-container {
+    perspective: 1000px;
+}
+
+    .movie-image-container img {
+        transform-style: preserve-3d;
+        transition: transform 0.5s ease;
+    }
+
+        .movie-image-container img:hover {
+            transform: rotateY(10deg) rotateX(5deg);
+        }
+
+/* Actor Container */
+.actor-container {
+    perspective: 1000px;
+    transition: transform 0.3s ease-in-out;
+}
+
+    .actor-container:hover {
+        transform: translateY(-10px) scale(1.05);
+    }
+
+.actor-name {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: none;
+}
+
+/* Cinema Card */
+.cinema-card {
+    perspective: 10px;
+    transition: transform 0.7s ease, box-shadow 0.3s ease;
+}
+
+    .cinema-card:hover {
+        transform: translateY(-10px) scale(0.9);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+.cinema-img-container img {
+    transition: transform 0.7s ease;
+}
+
+    .cinema-img-container img.hovered {
+        transform: scale(1.1);
+    }
+
+.cinema-details {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    display: none;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}

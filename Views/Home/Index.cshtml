@@ -1,0 +1,157 @@
+﻿@model List<ETickets.Models.Movie>
+
+@{
+    ViewData["Title"] = "Home";
+    var Tickets = ViewData["Tickets"] as List<TicketsCart>;
+
+}
+
+<div class="container mt-4">
+    <div class="row">
+        @foreach (var Movie in Model)
+        {
+            <div class="col-md-6 position-relative">
+                <div class="card mb-4 sharp-card">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="d-flex justify-content-end position-absolute top-50 end-0 m-2">
+                            <!-- Edit Button -->
+                            <a asp-controller="Movie" asp-action="EditMovie" asp-route-id="@Movie.MovieId" class="btn btn-outline-warning me-2" style="border:none">
+                                <img src="~/images/Icons/pen.svg" />
+                            </a>
+                            <!-- Trash Bin Icon -->
+                            <button class="btn btn-outline-danger no-border" style="border:none" data-bs-toggle="modal" data-bs-target="#deleteModal-@Movie.MovieId">
+                                <img src="~/images/Icons/trash.svg" />
+                            </button>
+                        </div>
+                    }
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <a asp-controller="Movie" asp-action="Index" asp-route-id="@Movie.MovieId">
+                                <img src="@Url.Content("~/images/movies/" + Movie.ImgUrl)" class="img-fluid rounded-start card-img" alt="@Movie.Title" style="height:100%;">
+                            </a>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a asp-controller="Movie" asp-action="Index" asp-route-id="@Movie.MovieId">
+                                        @Movie.Title
+                                    </a>
+                                </h5>
+                                <h6>
+                                    Price :
+                                    <button class="btn btn-dark" disabled>
+                                        $@Movie.Price
+                                    </button>
+                                </h6>
+                                <p>
+                                    Category :
+                                    <a asp-action="category" asp-controller="categories" asp-route-Category="@Movie.Categories.Name" class="category-link">@Movie.Categories.Name</a>
+                                </p>
+
+                                @switch (Movie.MovieStatus)
+                                {
+                                    case ETickets.Data.MovieStatus.Upcoming:
+                                        <button class="btn btn-warning mb-3" disabled>
+                                            Upcoming
+                                        </button>
+                                        break;
+                                    case ETickets.Data.MovieStatus.Available:
+                                        <button class="btn btn-success mb-3" disabled>
+                                            Available
+                                        </button>
+                                        break;
+                                    case ETickets.Data.MovieStatus.Expired:
+                                        <button class="btn btn-danger mb-3" disabled>
+                                            Expired
+                                        </button>
+                                        break;
+                                }
+
+                                <!-- Ticket Booking Form -->
+                                <form asp-action="BookTicket" asp-controller="TicketsCart" method="post" onsubmit="return validateCinemaSelection(@Movie.MovieId);">
+                                    <input type="hidden" name="MovieId" value="@Movie.MovieId" />
+                                    <input type="hidden" name="ViewNavigation" value="@ETickets.Data.ViewNavigation.HomeIndex" />
+
+                                    <!-- Select Menu for Cinema Selection -->
+                                    <div class="form-group" >
+                                        <select id="CinemaSelect-@Movie.MovieId" name="CinemaId" class="form-select custom-select">
+                                            <option value="" selected disabled>Select Cinema</option>
+                                            @{
+                                                var movietickets = Tickets?.FirstOrDefault(m => m.MovieId == Movie.MovieId);
+                                                foreach (var cinema in Movie.Cinemas)
+                                                {
+                                                    int ticketscinema = movietickets?.TCinema.FirstOrDefault(t => t.CinemaId == cinema.CinemaId)?.QNumber ?? 0;
+
+                                                    <option value="@cinema.CinemaId" data-quantity="@ticketscinema">@cinema.Name x @ticketscinema</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <!-- Validation message -->
+                                    <div class="text-danger mt-2" id="validationMessage-@Movie.MovieId" style="display:none;">
+                                        Please select a cinema before booking.
+                                    </div>
+
+
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <button type="submit" class="btn btn-outline-success btn-lg" @(Movie.MovieStatus == ETickets.Data.MovieStatus.Available ? "" : "disabled")>
+                                            Book Ticket
+                                        </button>
+                                        @{
+                                            var movieExist = Tickets?.Where(m => m.MovieId == Movie.MovieId).FirstOrDefault();
+                                            if (movieExist != null)
+                                            {
+                                                <h3 style="color:black">x @movieExist.TCinema.Sum(t => t.QNumber)</h3>
+                                            }
+                                        }
+                                        <!-- Ticket Quantity Selector -->
+                                        <div class="d-flex align-items-center">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="decrementTicketQuantity(@Movie.MovieId)" @(Movie.MovieStatus == ETickets.Data.MovieStatus.Available ? "" : "disabled")>-</button>
+                                            <input type="number" id="TicketQuantity-@Movie.MovieId" name="QNumber" class="form-control mx-2 text-center" value="0" min="0" style="width: 60px;" readonly />
+                                            <button type="button" class="btn btn-outline-secondary" onclick="incrementTicketQuantity(@Movie.MovieId)" @(Movie.MovieStatus == ETickets.Data.MovieStatus.Available ? "" : "disabled")>+</button>
+                                        </div>
+                                    </div>
+
+                                </form>
+
+                                <script>
+                                    // Add the listener when the document is ready
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        addCinemaSelectionListener(@Movie.MovieId);
+                                    });
+                                </script>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteModal-@Movie.MovieId" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete the movie "@Movie.Title"?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <a asp-controller="Movie" asp-action="DeleteMovie" asp-route-id="@Movie.MovieId" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<link rel="stylesheet" href="~/Style/CardStyle.css" />
+
+<script src="~/js/Home.js"> 
+</script>

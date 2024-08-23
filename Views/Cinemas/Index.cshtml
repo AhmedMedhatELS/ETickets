@@ -1,0 +1,36 @@
+﻿@model List<Cinema>
+
+@{
+    ViewData["Title"] = "Cinemas";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Cinemas</h2>
+    <div class="row">
+        @foreach (var cinema in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card cinema-card shadow-lg" style="height: 500px;">
+                   
+                    <a asp-action="Details" asp-controller="Cinemas" asp-route-id="@cinema.CinemaId" >
+                        <img src="~/images/cinema/@cinema.img" class="card-img-top" style="height: 450px" alt="@cinema.Name">
+                    </a>
+                    <div class="card-body text-center">
+                        <h5 class="card-title font-weight-bold ">
+                            <a asp-action="Details" asp-controller="Cinemas" asp-route-id="@cinema.CinemaId" class="stretched-link text-decoration-none">
+                                @cinema.Name
+                            </a>
+                           
+                        </h5>
+                        
+                    </div>
+                </div>
+            </div>
+           
+        }
+    </div>
+</div>
+<link rel="stylesheet" href="~/Style/movie.css" />
+
+
+<link rel="stylesheet" href="~/Style/CinemaStyle.css" />

@@ -1,0 +1,100 @@
+﻿.form-select.custom-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #343a40;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #343a40;
+    width: 55%;
+    max-width: 300px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+    .form-select.custom-select:focus {
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    .form-select.custom-select option {
+        background-color: white;
+        color: black;
+    }
+
+.sharp-card {
+    border-radius: 0; /* Removes rounded corners */
+    border: 1px solid #ccc; /* Optional border */
+    transition: transform 0.3s, box-shadow 0.3s; /* Transition for hover effect */
+}
+
+    .sharp-card:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-5px); /* Lifts the card on hover */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Adds shadow on hover */
+    }
+
+.category-link {
+    color: blue; /* Sets the color of the category link to blue */
+    text-decoration: none; /* Removes underline */
+}
+
+    .category-link:hover {
+        text-decoration: underline; /* Adds underline on hover for emphasis */
+    }
+
+.card-title a {
+    text-decoration: none; /* Removes underline from the card title link */
+    color: inherit; /* Keeps the original color */
+}
+
+    .card-title a:hover {
+        color: #007bff; /* Changes color on hover */
+    }
+
+/* Style for the card image */
+.card-img {
+    border: 3px solid #ddd; /* Light grey border */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
+
+    .card-img:hover {
+        transform: scale(1.05); /* Slight zoom effect */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+    }
+
+.card-img-grayscale {
+    filter: grayscale(100%); /* Grayscale effect */
+    transition: filter 0.3s ease; /* Smooth transitions */
+}
+
+    .card-img-grayscale:hover {
+        filter: grayscale(0%); /* Restore color on hover */
+    }
+
+
+
+.dropdown-menu {
+    background-color: #6c757d; /* Bootstrap grey color */
+}
+
+/* Optional: Change text color to white for better contrast */
+.dropdown-item {
+    color: white; /* Text color */
+}
+
+    /* Optional: Change text color on hover */
+    .dropdown-item:hover {
+        background-color: #5a6268; /* Darker grey on hover */
+    }
+.card-title {
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Add ellipsis (...) for overflow text */
+    max-width: 100%; /* Limit max width */
+    font-weight: bold; /* Make the title bold */
+    margin-bottom: 30px;
+}

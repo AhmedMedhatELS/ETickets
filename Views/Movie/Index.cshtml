@@ -1,0 +1,220 @@
+﻿@model Movie
+
+@{
+    ViewData["Title"] = Model.Title;
+    var Tickets = ViewData["Tickets"] as List<TicketsCart>;
+}
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Movie Image Section -->
+        <div class="col-md-4 ">
+
+            <div class="movie-image-container shadow-lg mb-5">
+                <a href="~/images/movies/@Model.ImgUrl" target="_blank" style="text-decoration: none">
+                    <img src="~/images/movies/@Model.ImgUrl" class="img-fluid rounded" style="height: 100%; width: 100%" alt="@Model.Title">
+                </a>
+            </div>
+            <div class="position-relative">
+                @if (User.IsInRole("Admin"))
+                {
+                    <div class="d-flex justify-content-end position-absolute top-0 end-0 m-2">
+                        <!-- Edit Button -->
+                        <a asp-controller="Movie" asp-action="EditMovie" asp-route-id="@Model.MovieId" class="btn btn-outline-warning me-2">
+                            <img src="~/images/Icons/pen.svg" />
+                        </a>
+                        <!-- Trash Bin Icon -->
+                        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@Model.MovieId">
+                            <img src="~/images/Icons/trash.svg" />
+                        </button>
+                    </div>
+                }
+                <a asp-action="category" asp-controller="categories" asp-route-Category="@Model.Categories.Name" class="btn btn-outline-dark mb-3 rounded-pill ">
+                    @Model.Categories.Name
+                </a>
+              
+            </div>
+            <div class="mb-5">
+                <p class="h1 text-success fw-bold">
+                    Price:
+                    <span class="h2">$@Model.Price</span>
+                    <span class="text-info h5" style="margin-left:80px;" >Views : @Model.Views</span>
+                </p>
+                    
+               
+            </div>
+            <div class="mb-4">
+                <h4 class="text-dark">
+                    <i class="bi bi-calendar"></i> Release Date:
+                    <span class="text-muted">@Model.StartDate.ToShortDateString()</span>
+                </h4>
+            </div>
+            <div class="mb-5">
+                <p class="badge
+                     @(Model.MovieStatus == ETickets.Data.MovieStatus.Upcoming ? "bg-warning" :
+                       Model.MovieStatus == ETickets.Data.MovieStatus.Expired ? "bg-danger" :
+                       "bg-success") fs-1 p-3 rounded-pill shadow">
+                    <i class="bi bi-info-circle"></i> @Model.MovieStatus.ToString()
+                </p>
+                <!-- Ticket Booking Form -->
+                <form asp-action="BookTicket" asp-controller="TicketsCart" method="post" onsubmit="return validateCinemaSelection(@Model.MovieId);">
+                    <input type="hidden" name="MovieId" value="@Model.MovieId" />
+                    <input type="hidden" name="ViewNavigation" value="@ETickets.Data.ViewNavigation.MovieDetails" />
+
+                    <!-- Select Menu for Cinema Selection -->
+                    <div class="form-group">
+                        <select id="CinemaSelect-@Model.MovieId" name="CinemaId" class="form-select custom-select">
+                            <option value="" selected disabled>Select Cinema</option>
+                            @{
+                                var movietickets = Tickets?.FirstOrDefault(m => m.MovieId == Model.MovieId);
+                                foreach (var cinema in Model.Cinemas)
+                                {
+                                    int ticketscinema = movietickets?.TCinema.FirstOrDefault(t => t.CinemaId == cinema.CinemaId)?.QNumber ?? 0;
+
+                                    <option value="@cinema.CinemaId" data-quantity="@ticketscinema">@cinema.Name x @ticketscinema</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Validation message -->
+                    <div class="text-danger mt-2" id="validationMessage-@Model.MovieId" style="display:none;">
+                        Please select a cinema before booking.
+                    </div>
+
+
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <button type="submit" class="btn btn-outline-success btn-lg" @(Model.MovieStatus == ETickets.Data.MovieStatus.Available ? "" : "disabled")>
+                            Book Ticket
+                        </button>
+                        @{
+                            var movieExist = Tickets?.Where(m => m.MovieId == Model.MovieId).FirstOrDefault();
+                            if (movieExist != null)
+                            {
+                                <h3 style="color:black">x @movieExist.TCinema.Sum(t => t.QNumber)</h3>
+                            }
+                        }
+                        <!-- Ticket Quantity Selector -->
+                        <div class="d-flex align-items-center">
+                            <button type="button" class="btn btn-outline-secondary" onclick="decrementTicketQuantity(@Model.MovieId)" @(Model.MovieStatus == ETickets.Data.MovieStatus.Available ? "" : "disabled")>-</button>
+                            <input type="number" id="TicketQuantity-@Model.MovieId" name="QNumber" class="form-control mx-2 text-center" value="0" min="0" style="width: 60px;" readonly />
+                            <button type="button" class="btn btn-outline-secondary" onclick="incrementTicketQuantity(@Model.MovieId)" @(Model.MovieStatus == ETickets.Data.MovieStatus.Available ? "" : "disabled")>+</button>
+                        </div>
+                    </div>
+
+                </form>
+
+                <script>
+                    // Add the listener when the document is ready
+                    document.addEventListener("DOMContentLoaded", function () {
+                        addCinemaSelectionListener(@Model.MovieId);
+                    });
+                </script>
+
+            </div>
+        </div>
+
+        <!-- Movie Details Section -->
+        <div class="col-md-8">
+            <h1 class="mb-3 text-dark fw-bold display-4">@Model.Title</h1>
+
+            <!-- Trailer Video -->
+            <div class="mb-4">
+                <div class="ratio ratio-16x9 shadow-lg rounded">
+                    <iframe src="@Model.TrailerUrl" title="@Model.Title Trailer" allowfullscreen class="rounded"></iframe>
+                </div>
+            </div>
+            <h5 class="text-dark">@Model.Description</h5>
+
+            <!-- Actors Section -->
+            <div class="row mt-5">
+                <h5 class="text-secondary">Cast</h5>
+                @foreach (var actor in Model.Actors)
+                {
+                    <div class="col-2 text-center mb-3">
+                        <a asp-controller="Actor" asp-action="Details" asp-route-id="@actor.ActorId" class="text-decoration-none">
+                            <div class="position-relative actor-container shadow">
+                                <img src="~/images/cast/@actor.ProfilePicture" class="img-fluid rounded-circle shadow-lg" alt="@actor.Name">
+                                <div class="actor-name position-absolute w-100 text-white text-center shadow" style="display: none;">
+                                    @actor.Name
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <hr />
+
+    <!-- Cinemas Section -->
+    <div class="row mt-5">
+        <h3 class="text-secondary mb-3">
+            @(Model.MovieStatus == ETickets.Data.MovieStatus.Upcoming ? "Coming Soon to" :
+                Model.MovieStatus == ETickets.Data.MovieStatus.Expired ? "Previously Shown In" :
+                "Now Showing In")
+            Cinemas
+        </h3>
+        @foreach (var cinema in Model.Cinemas)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="cinema-card text-center border-0 shadow-sm">
+                    <a asp-action="Details" asp-controller="Cinemas" asp-route-id="@cinema.CinemaId" class="text-decoration-none">
+                        <div class="cinema-img-container">
+                            <img src="~/images/cinema/@cinema.img" class="card-img-top rounded-top" alt="@cinema.Name">
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="cinema-details text-muted" style="display: none;">
+                                <h4 class="card-title text-dark">@cinema.Name</h4>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal-@Model.MovieId" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the movie "@Model.Title"?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a asp-controller="Movie" asp-action="DeleteMovie" asp-route-id="@Model.MovieId" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="~/Style/movie.css" />
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Show actor name on hover
+            $('.actor-container').hover(function () {
+                $(this).find('.actor-name').fadeIn();
+            }, function () {
+                $(this).find('.actor-name').fadeOut();
+            });
+
+            // Enlarge cinema image and show details on hover
+            $('.cinema-card').hover(function () {
+                $(this).find('.cinema-img-container img').addClass('hovered');
+                $(this).find('.cinema-details').slideDown();
+            }, function () {
+                $(this).find('.cinema-img-container img').removeClass('hovered');
+                $(this).find('.cinema-details').slideUp();
+            });
+        });
+    </script>
+}
+
+<script src="~/js/Home.js">

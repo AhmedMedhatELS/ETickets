@@ -1,0 +1,84 @@
+﻿@model Actor
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="actor-detail-container mt-5 p-4">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card actor-detail-card">
+                <img src="~/images/cast/@Model.ProfilePicture" class="card-img-top img-fluid" alt="@Model.Name">
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card actor-info-card p-4">
+                <div class="card-body position-relative">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="d-flex justify-content-end position-absolute top-0 end-0 m-2">
+                            <!-- Edit Button -->
+                            <a asp-controller="Actor" asp-action="EditActor" asp-route-id="@Model.ActorId" class="btn btn-outline-warning me-2" style="border:none">
+                                <img src="~/images/Icons/pen.svg" />
+                            </a>
+                            <!-- Trash Bin Icon -->
+                            <button class="btn btn-outline-danger no-border" style="border:none" data-bs-toggle="modal" data-bs-target="#deleteModal-@Model.ActorId">
+                                <img src="~/images/Icons/trash.svg" />
+                            </button>
+                        </div>
+                    }
+                    <h1 class="card-title display-4 mb-4">@Model.Name</h1>
+                    <div class="d-flex justify-content-between mb-3">
+                        <p class="card-subtitle"><strong>Nationality:</strong> @Model.Nationality</p>
+                        <p class="card-subtitle"><strong>Date of Birth:</strong> @Model.Birth_Date</p>
+                    </div>
+                    <hr class="my-4">
+                    <h4 class="section-title">Biography</h4>
+                    <p class="card-text mb-4">@Model.Bio</p>
+                    <a asp-controller="Actor" asp-action="Index" class="btn btn-dark btn-lg custom-btn">Back to Actors</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+<div class="movies-section mt-5">
+    <h3 class="section-title">Movies</h3>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        @foreach (var movie in Model.Movies)
+        {
+            <div class="col">
+                <div class="card movie-card h-100">
+                    <a asp-controller="Movie" asp-action="Index" asp-route-id="@movie.MovieId" class="text-decoration-none">
+                        <img src="~/images/movies/@movie.ImgUrl" class="card-img-top" alt="@movie.Title">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">@movie.Title</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal-@Model.ActorId" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the Actor "@Model.Name"?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a asp-controller="Actor" asp-action="DeleteActor" asp-route-id="@Model.ActorId" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<link rel="stylesheet" href="~/Style/ActorDetails.css" />

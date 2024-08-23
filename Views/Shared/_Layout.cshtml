@@ -1,0 +1,157 @@
+﻿<!-- #region For Categories Dropdown List -->
+@using ETickets.Repository.IRepository
+@using ETickets.Repository
+@inject ICategoriesRepository CategoriesRepository
+<!-- #endregion -->
+@{
+    int NumberTickets = ViewData["TotalTickets"] as int? ?? 0;
+    bool ShowTicket = ViewData["Show"] as bool? ?? true;
+}
+<!-- #endregion -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="~/images/Favlogo.png" type="image/png">
+    <title>@ViewData["Title"] - ETickets</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ETickets.styles.css" asp-append-version="true" />
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/Favlogo.png" alt="Logo" width="30" height="30" class="d-inline-block align-top">
+                    ETickets
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Actor" asp-action="Index">Actors</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Cinemas" asp-action="Index">Cinemas</a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="TicketsCart" asp-action="Orders">Orders</a>
+                            </li>
+                        }
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Categories
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                                @foreach (var category in CategoriesRepository.GetAll())
+                                {
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="categories" asp-action="category" asp-route-category="@category.Name">@category.Name</a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="actionsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Actions
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="actionsDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="categories" asp-action="AddCategory">Add Category</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Movie" asp-action="AddMovie">Add Movie</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Cinemas" asp-action="AddCinema">Add Cinema</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Actor" asp-action="AddActor">Add Actor</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Register">Add Admin</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+
+                    <!-- Search Bar with Dropdown -->
+                    <form class="d-flex align-items-center" id="Search-form" method="get" asp-action="Search" asp-controller="Home">
+                        <div class="input-group">
+                            <select name="SearchFor" style="width: 110px" class="form-select dropdown-select" aria-label="Search categories">
+                                <option value="All" selected>All</option>
+                                <option value="Movies">Movies</option>
+                                <option value="Actors">Actors</option>
+                                <option value="Cinemas">Cinemas</option>
+                            </select>
+                            <input name="SearchQuery" type="text" style="width: 200px" class="form-control search-input" placeholder="Search" aria-haspopup="true">
+                        </div>
+                    </form>
+
+                    <!-- User Authentication Links -->
+                    <div class="d-flex align-items-center">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <span class="me-3 text-dark" style="margin-left: 30px;">@User.Identity.Name</span>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                        }
+                        else
+                        {
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - ETickets - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <a href="#" class="arrow" style="text-decoration:none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="55" height="55" fill="black" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z" />
+        </svg>
+    </a>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a asp-action="Cart" asp-controller="TicketsCart" class="cart" style="display:@(ShowTicket ?    "" : "none")">
+            <svg xmlns="http://www.w3.org/2000/svg" width="65" height="65" fill=@(NumberTickets == 0 ? "grey" : "green") class="bi bi-ticket-detailed position-relative" viewBox="0 0 16 16">
+                <path d="M4 5.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M5 7a1 1 0 0 0 0 2h6a1 1 0 1 0 0-2z" />
+                <path d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5V6a.5.5 0 0 1-.5.5 1.5 1.5 0 0 0 0 3 .5.5 0 0 1 .5.5v1.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5V10a.5.5 0 0 1 .5-.5 1.5 1.5 0 1 0 0-3A.5.5 0 0 1 0 6zM1.5 4a.5.5 0 0 0-.5.5v1.05a2.5 2.5 0 0 1 0 4.9v1.05a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-1.05a2.5 2.5 0 0 1 0-4.9V4.5a.5.5 0 0 0-.5-.5z" />
+            </svg>
+            <span id="cardCounter" class="position-absolute  start-0 translate-middle badge rounded-pill bg-success" style="display: @(NumberTickets == 0 ? "none" : "")">
+                @NumberTickets
+            </span>
+        </a>
+    }
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
